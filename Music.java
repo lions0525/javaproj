@@ -3,28 +3,27 @@ import java.io.File;
 import java.io.IOException;
 import javax.sound.sampled.*;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 
 public class Music extends JDialog{
     private Clip clip;
-    private Clip clip2;
+    private float currentVol = 0.5f;
+
+    public void playMusic(String filename, boolean loop) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        playMusic(filename, null, loop);
+    }
+
     //music run function
-    public void music_run(String filename) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public void playMusic(String filename, Integer volume, boolean loop) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(filename).getAbsoluteFile());
         clip = AudioSystem.getClip();
         clip.open(audioInputStream);
-        clip.loop(Clip.LOOP_CONTINUOUSLY);
-        setVolume(0.5f);
+        if (loop)
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+
+        if (volume != null)
+            currentVol = volume / 100f;
+        setVolume(currentVol);
         clip.start();
-    }
-    public void sound_run(String filename) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(filename).getAbsoluteFile());
-        clip2 = AudioSystem.getClip();
-        clip2.open(audioInputStream);
-        setVolume(1f);
-        clip2.start();
     }
 
     public void music_control() {
@@ -46,11 +45,16 @@ public class Music extends JDialog{
         controlFrame.setVisible(true);
     }
 
+    public float getVolume() {
+        return currentVol;
+    }
+
     private void setVolume(float volume) {
-        if (clip != null) {
-            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            float dB = (float) (Math.log(volume) / Math.log(10.0) * 20.0);
-            gainControl.setValue(dB);
-        }
+        if (clip == null)
+            return;
+        currentVol = volume;
+        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+        float dB = (float) (Math.log(volume) / Math.log(10.0) * 20.0);
+        gainControl.setValue(dB);
     }
 }

@@ -5,7 +5,7 @@ import java.awt.*;
 import java.io.IOException;
 
 public class Start extends JFrame {
-    public static Music Music1;
+    public static Music backgroundMusic;
     ImageIcon menu;
     ImageIcon startimg = new ImageIcon("./images/startbutton.png");
     ImageIcon optionimg = new ImageIcon("./images/optionbutton.png");
@@ -55,14 +55,14 @@ public class Start extends JFrame {
 
         //music function call
         try {
-            Music1 = new Music();
-            Music1.music_run("./music/main-music.wav");
+            backgroundMusic = new Music();
+            backgroundMusic.playMusic("./music/main-music.wav", 0, true);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             System.out.println("error");
         }
 
         //start button
-        bgame.addActionListener(e -> new Gamemap().make_Gamemap(Music1));
+        bgame.addActionListener(e -> new Gamemap().make_Gamemap(backgroundMusic));
         //exit button
         bquit.addActionListener(e -> {
             int result = JOptionPane.showConfirmDialog(null, "want to exit?", "exit", JOptionPane.YES_NO_OPTION);
@@ -72,7 +72,7 @@ public class Start extends JFrame {
             }
         });
         //option button
-        boption.addActionListener(e -> Music1.music_control());
+        boption.addActionListener(e -> backgroundMusic.music_control());
     }
 
     public static void main(String[] args) {
